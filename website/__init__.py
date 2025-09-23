@@ -3,7 +3,7 @@ from flask_apscheduler import APScheduler
 from flask_socketio import SocketIO
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
-from flask_jwt_extended import JWTManager
+from flask_login import LoginManager
 
 import os, importlib, datetime
 
@@ -14,7 +14,6 @@ firebase_admin.initialize_app(cred)
 db = SQLAlchemy()
 DB_NAME  = 'database.db'
 
-jwt = JWTManager()
 socketio = SocketIO()
 scheduler = APScheduler()
 
@@ -27,15 +26,9 @@ def create_database(app):
 def create_app():
     app = Flask(__name__)
     app.config['SECRET_KEY'] = os.environ['SECRET_KEY']
-    
-    app.config["JWT_SECRET_KEY"] = os.environ['SECRET_KEY']
-    app.config["JWT_ACCESS_TOKEN_EXPIRES"] = datetime.timedelta(days=3)
-
     app.config['SQLALCHEMY_DATABASE_URI']=f'sqlite:///{DB_NAME}'
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = True
 
-    
-    jwt.init_app(app)
     db.init_app(app)
     socketio.init_app(app)
 
@@ -50,6 +43,12 @@ def create_app():
         app.register_blueprint(bp)
 
     from .models import User
+    login_manager = LoginManager()
+    login_manager.init_app(app)
+    @login_manager.user_loader
+    def load_user(id):
+        return User.query.get(id)
+
 
     create_database(app)
     return app

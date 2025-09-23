@@ -6,9 +6,9 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy import JSON, DateTime
 from sqlalchemy.ext.mutable import *
 
-import time, datetime
+from flask_login import UserMixin
 
-class User(db.Model):
+class User(db.Model, UserMixin):
     id: Mapped[str] = mapped_column(primary_key=True)
     username: Mapped[str] = mapped_column(nullable=False)
     avatar: Mapped[str] = mapped_column(nullable=True)
