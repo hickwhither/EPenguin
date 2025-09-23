@@ -1,5 +1,5 @@
-from flask import Blueprint, request
-import json
+from flask import Blueprint, request, jsonify
+import json, math
 
 from website import db
 from website.models import FreeProblem
@@ -7,7 +7,7 @@ from website.models import FreeProblem
 bp = Blueprint('api', __name__, url_prefix='/api')
 
 @bp.route("/problems")
-def get_problem():
+def problem_list():
     try:
         page = int(request.args.get('page') or 1)
         count = int(request.args.get('count') or 20)
@@ -32,17 +32,47 @@ def get_problem():
     elif rating_end is not None:
         query = query.filter(FreeProblem.rating <= rating_end)
     
-    problems = query.offset((page - 1) * count).limit(count).all()
+    total = query.count()
+    pages = math.ceil(total / count) if count > 0 else 1
 
+    query = query.order_by(FreeProblem.updated_at.desc())
+
+
+    problems = query.offset((page - 1) * count).limit(count).all()
     problem_json = [
         {
             "oj": p.oj,
             "id": p.id,
             "link": p.link,
+            "updated_at": p.updated_at,
             "title": p.title,
             "rating": p.rating,
         }
         for p in problems
     ]
+
+    data = {
+        "ojs": ["luyencode"],
+        "pages": pages,
+        "problems": problem_json
+    }
     
-    return problem_json
+    return data
+
+@bp.route("/problem/<string:id>")
+def get_problem(id):
+    problem = FreeProblem.query.get(id)
+    if not problem:
+        return {"error": "Problem not exists"}, 404
+    return {
+        "oj": problem.oj,
+        "id": problem.id,
+        "link": problem.link,
+        "updated_at": problem.updated_at,
+        "title": problem.title,
+        "rating": problem.rating,
+        
+        "data": problem.data,
+        "description": problem.description,
+        "translated": problem.translated
+    }

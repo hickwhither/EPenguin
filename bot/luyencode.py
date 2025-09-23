@@ -115,16 +115,6 @@ class Luyencode:
         count = int(s[-2].text.strip())
         return count
 
-import os
-state_file = os.path.join(os.path.dirname(__file__), 'luyencode.json')
-def load_state():
-    try:
-        with open(state_file, 'r') as f:
-            return json.load(f).get('current_page', 1)
-    except FileNotFoundError: return 1
-def save_state(current_page):
-    with open(state_file, 'w') as f:
-        json.dump({'current_page': current_page}, f)
 
 def crawler(sessionid, update_func):
     print("Luyencode crawler started!")
@@ -141,13 +131,11 @@ def crawler(sessionid, update_func):
         #     print(f"Error updating luyencode problems: {e}")
         time.sleep(1)
     
-    current_page = load_state()
+    current_page = 1
     while True:
         page_count = b.page_count()
         for i in range(current_page, page_count+1): 
             page(i)
             current_page = i
-            save_state(current_page)
         current_page = page_count
-        save_state(current_page)
         time.sleep(60)

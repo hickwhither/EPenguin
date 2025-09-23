@@ -7,5 +7,7 @@ wheels/
 *.egg-info
 
 .venv
-.env
 instance
+
+.env
+cktoj-users-abcxyzhehe-firebase-adminsdk.json
