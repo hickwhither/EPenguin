@@ -12,7 +12,7 @@ class User(db.Model, UserMixin):
     id: Mapped[str] = mapped_column(primary_key=True)
     username: Mapped[str] = mapped_column(nullable=False)
     avatar: Mapped[str] = mapped_column(nullable=True)
-    name: Mapped[str] = mapped_column(nullable=True)
+    nickname: Mapped[str] = mapped_column(nullable=True)
     rating: Mapped[int] = mapped_column(default=1000)
 
     def __repr__(self):

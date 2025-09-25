@@ -4,8 +4,17 @@ import hashlib
 from urllib.parse import urlencode
 
 from flask import *
-from flask_login import login_user, current_user, logout_user
+from flask_login import *
 from werkzeug.security import check_password_hash
+from flask_jwt_extended import (
+    unset_jwt_cookies,
+    create_access_token,
+    create_refresh_token,
+    jwt_required,
+    get_jwt_identity,
+    get_jwt,
+    current_user,
+)
 
 from firebase_admin import firestore
 firestore_client = firestore.client()
@@ -37,23 +46,45 @@ def signin():
         db.session.add(new_user)
         db.session.commit()
     
-    login_user(doc.id)
-    return {"msg": "success"}
+    access_token = create_access_token(identity=doc.id)
+    refresh_token = create_refresh_token(identity=doc.id)
+
+    login_user(User.query.get(doc.id))
+    
+    return {
+        "msg": "success",
+        "access_token": access_token,
+        "refresh_token": refresh_token,
+    }
 
 @bp.route("/logout", methods=["POST"])
+@jwt_required()
 def logout():
-    logout_user()
-    return {"msg": "success"}
+    response = jsonify({"msg": "success"})
+    unset_jwt_cookies(response)
+    return response
+
+@bp.route("/refresh", methods=["POST"])
+@jwt_required(refresh=True)
+def refresh():
+    identity = get_jwt_identity()
+    access_token = create_access_token(identity=identity)
+    return {"access_token": access_token}
 
 @bp.route("/profile")
+@jwt_required()
 def profile():
-    if not current_user.is_authenticated:
-        return {"id": 0}
-    current_user:User
+    # print(current_user)
+
+    user_id = get_jwt_identity()
+    user = User.query.get(user_id)
+    if not user:
+        return {"msg": "User not found"}, 404
+    
     return {
-        "id": current_user.id,
-        "username": current_user.username,
-        "avatar": current_user.avatar,
-        "name": current_user.name,
-        "rating": current_user.rating,
+        "id": user.id,
+        "username": user.username,
+        "avatar": user.avatar,
+        "nickname": user.nickname,
+        "rating": user.rating,
     }
