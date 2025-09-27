@@ -10,7 +10,7 @@ firebase_admin.initialize_app(cred)
 db = firestore.client()
 users_ref = db.collection("user")
 
-print()
+
 doc = users_ref.where(filter=FieldFilter("username", "==", "khiemkrkt")).get()
 if doc:
     print(f"{doc[0].id} => {doc[0].to_dict()}")
