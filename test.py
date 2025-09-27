@@ -16,3 +16,4 @@ if doc:
     print(f"{doc[0].id} => {doc[0].to_dict()}")
 else:
     print("No document found.")
+
