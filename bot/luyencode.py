@@ -15,30 +15,17 @@ class Luyencode:
         self.signup_site = f"{self.site}/accounts/register/"
         self.login_site = f"{self.site}/accounts/login/"
 
-
-    # def create_account(self, username:str=None, email:str=None, password:str=None, full_name:str=None) -> tuple:
-    #     username = username or randomusername()
-    #     email = email or randomemail()
-    #     password = password or ''.join(i for i in random.choices(string.ascii_letters+string.digits, k=random.randint(10,20)))
-    #     full_name = full_name or ''
-
-    #     self.session = requests.session()
-    #     self.session.headers = HEADERSVJP
-    #     request: requests.Response = pst(self.session, self.signup_site, data=dict(
-    #         username = username.replace('-', ''),
-    #         email = email.replace('-', ''),
-    #         password1 = password,
-    #         password2 = password,
-    #         full_name = full_name,
-    #         timezone = "Asia/Saigon",
-    #         language = 4)
-    #     )
-    #     if request.url!=f"{self.site}/accounts/register/complete/":
-    #         print("error:", username, email, password)
-    #         with open("a.html", "w", encoding='utf-8') as f: f.write(request.content.decode())
-    #         return None
-        
-    #     return username, email, password
+        self.set_sessionid("g0br6g3b9bl75ewjzdmjhrrmxk2vdde1")
+        self.current_page = 1
+    
+    def page(p):
+        problems = b.get_problem_list(p)
+        update_func(problems)
+        print(f"Updated {len(problems)} problems from luyencode page {p}")
+        # try:
+        # except Exception as e:
+        #     print(f"Error updating luyencode problems: {e}")
+        time.sleep(1)
 
     def get_cookie(self):
         return self.session.cookies.get('sessionid') or self.session.cookies.get_dict()['sessionid']
@@ -48,8 +35,6 @@ class Luyencode:
         self.session.headers = HEADERSVJP
         r = pst(self.session, self.login_site, dict(username=username, password=password))
         return r.url == f"{self.site}/user"
-        if r.url == f"{self.site}/user": print(f"{username} logged in")
-        else: print(f"{username} failed to login")
 
     def set_sessionid(self, cookie:str) -> None:
         self.session = requests.session()
@@ -122,14 +107,7 @@ def crawler(sessionid, update_func):
     b = Luyencode()
     b.set_sessionid(sessionid)
 
-    def page(p):
-        problems = b.get_problem_list(p)
-        update_func(problems)
-        print(f"Updated {len(problems)} problems from luyencode page {p}")
-        # try:
-        # except Exception as e:
-        #     print(f"Error updating luyencode problems: {e}")
-        time.sleep(1)
+    
     
     current_page = 1
     while True:
