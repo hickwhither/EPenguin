@@ -26,7 +26,7 @@ def signin():
     if username==None or password==None: return {"msg": "Wrong email or password"}, 401
     
     doc = users_ref.where(filter=FieldFilter("username", "==", username)).get()
-    if not doc: return {"msg": "Wrong email or password"}, 401
+    if len(doc)==0: return {"msg": "Wrong email or password"}, 401
     doc = doc[0]
     data = doc.to_dict()
     pwhash = data["password"]
@@ -48,13 +48,13 @@ def signin():
         # "refresh_token": refresh_token,
     }
 
-@bp.route("/logout", methods=["POST"])
 @login_required
 def logout():
-    return login_user()
+    logout_user()
+    return {"msg": "success"}
 
 @bp.route("/profile")
-# @login_required
+@login_required
 def profile():
     user:User = current_user
     if not user.is_active:
