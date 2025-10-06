@@ -2,6 +2,8 @@
 - `GET /api/problem/<id>` — Lấy bài theo `id`.
 - `GET /api/problem/<id>/update` — Gọi bot update bài. (không có ktra auth và chưa gắn delay đâu, ai spam cắchuym)
 
+---
+
 ### `GET /api/problems`
 
 **Query parameters**

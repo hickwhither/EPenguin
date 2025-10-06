@@ -21,8 +21,8 @@ fetch("https://api.backend.com/signin", {
 ---
 
 ## `POST /logout`
-- {"msg": "success"}
-- 401: nếu chưa login
+- `200` - `{"msg": "success"}`
+- `401 (unauthorized)` - nếu chưa login
 
 ---
 
@@ -39,12 +39,12 @@ fetch("https://api.backend.com/signin", {
 }
 ```
 
-- `404` - `{"msg": "User not found"}`: nếu `current_user.is_active` là False hoặc user không tồn tại.
+- `401 (unauthorized)` -  chưa login
+- `404` - `{"msg": "User not found"}`: chắc là vừa bị xóa acc á.
 
 ---
 
 ## Ví dụ curl
-
 
 ```bash
 curl -X POST https://yourdomain.com/signin \
