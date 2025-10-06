@@ -1,7 +1,7 @@
-from flask import Blueprint, request, jsonify
+from flask import *
 import json, math
 
-from website import db
+from website import db, scheduler
 from website.models import FreeProblem
 
 bp = Blueprint('api', __name__, url_prefix='/api')
@@ -59,9 +59,22 @@ def problem_list():
     
     return data
 
+@bp.route("/problem/<string:id>/update")
+def update_problem(id):
+    problem:FreeProblem = FreeProblem.query.get(id)
+    if not problem: return {"error": "Problem not exists"}, 404
+    scheduler.add_job(
+        id=problem.id,
+        func=current_app.bots[problem.oj].fetch,
+        kwargs={"problemid": problem.id},
+    )
+
+    return {"success": "Job has been added"}
+
+
 @bp.route("/problem/<string:id>")
 def get_problem(id):
-    problem = FreeProblem.query.get(id)
+    problem:FreeProblem = FreeProblem.query.get(id)
     if not problem:
         return {"error": "Problem not exists"}, 404
     return {
@@ -69,10 +82,16 @@ def get_problem(id):
         "id": problem.id,
         "link": problem.link,
         "updated_at": problem.updated_at,
-        "title": problem.title,
         "rating": problem.rating,
-        
-        "data": problem.data,
+
+        "title": problem.title,
         "description": problem.description,
-        "translated": problem.translated
+        "translated": problem.translated,
+        
+        "timelimit": problem.timelimit,
+        "memorylimit": problem.memorylimit,
+        "input": problem.input,
+        "output": problem.output,
     }
+
+

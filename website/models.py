@@ -19,15 +19,20 @@ class User(db.Model, UserMixin):
         return f"User({self.id}, {self.username})"
 
 class FreeProblem(db.Model):
-    oj: Mapped[str] = mapped_column(nullable=False)
     id: Mapped[str] = mapped_column(primary_key=True)
+    oj: Mapped[str] = mapped_column(nullable=False)
     link: Mapped[str] = mapped_column(nullable=False)
     updated_at: Mapped[int] = mapped_column(default=0)
 
     title: Mapped[str] = mapped_column(default="No title")
-    data: Mapped[dict] = mapped_column(MutableDict.as_mutable(JSON), default={})
     description: Mapped[str] = mapped_column(default="")
     translated: Mapped[str] = mapped_column(default="")
+
+    timelimit: Mapped[int] = mapped_column(default=0)
+    memorylimit: Mapped[int] = mapped_column(default=0)
+    input: Mapped[str] = mapped_column(default="")
+    output: Mapped[str] = mapped_column(default="")
+
 
     rating: Mapped[str] = mapped_column(nullable=True)
 

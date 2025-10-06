@@ -43,10 +43,9 @@ def create_app():
     )
 
     scheduler.init_app(app)
-    scheduler.start()
 
     # Loading bp
-    blueprints = ['api', 'auth', 'updater']
+    blueprints = ['api', 'auth']
     for i in blueprints:
         bp = importlib.import_module(f'website.routes.{i}', 'bp').bp
         app.register_blueprint(bp)
@@ -59,7 +58,14 @@ def create_app():
     def load_user(id):
         return User.query.get(id)
 
-
     create_database(app)
+    
+    import json
+    bots = ['luyencode']
+    app.bots = {}
+    for i in bots:
+        app.bots[i] = importlib.import_module(f'bot.{i}', 'setup').setup(app)
+    
+    scheduler.start()
     return app
 

@@ -1,5 +1,5 @@
 # from generator import *
-from utils import *
+from ..utils import *
 from bs4 import BeautifulSoup
 import json
 import time
@@ -14,18 +14,6 @@ class Luyencode:
         self.site = "https://luyencode.net"
         self.signup_site = f"{self.site}/accounts/register/"
         self.login_site = f"{self.site}/accounts/login/"
-
-        self.set_sessionid("g0br6g3b9bl75ewjzdmjhrrmxk2vdde1")
-        self.current_page = 1
-    
-    def page(p):
-        problems = b.get_problem_list(p)
-        update_func(problems)
-        print(f"Updated {len(problems)} problems from luyencode page {p}")
-        # try:
-        # except Exception as e:
-        #     print(f"Error updating luyencode problems: {e}")
-        time.sleep(1)
 
     def get_cookie(self):
         return self.session.cookies.get('sessionid') or self.session.cookies.get_dict()['sessionid']
@@ -55,27 +43,32 @@ class Luyencode:
                 language = langcode,)
         )
 
-
     def get_problem(self, id: str):
         response = self.session.get(f"{self.site}/problem/{id}")
         content = response.content.decode()
         soup = BeautifulSoup(content, 'html.parser')
-        # title = soup.find('div', class_='problem-title').text.strip()
-        problem = soup.find('div', class_='content-description').text.strip()[:-15]
+        pdf_button = soup.find('a', id='pdf_button')
+        if pdf_button:
+            pdf_button.decompose()
+        title = soup.find('div', class_='problem-title').text.strip()
+        description = soup.find('div', class_='content-description').text.strip()[:-15]
         data_specific = {
             "Giớihạnthờigian:": "timelimit",
             "Giớihạnbộnhớ:": "memorylimit",
             "Input:": "input",
             "Output:": "output",
         }
-        data = {}
+        data = {
+            "title": title,
+            "description": description
+        }
         for div in soup.find_all("div", class_="problem-info-entry"):
             text:str = div.text
             text = text.replace('\n', '').replace(' ', '')
             for k, v in data_specific.items():
                 if text.startswith(k):
                     data[v] = text[len(k):]
-        return problem, data
+        return data
 
     def get_problem_list(self, page: int):
         response = self.session.get(f"{self.site}/problems?page={page}")
@@ -101,19 +94,3 @@ class Luyencode:
         return count
 
 
-def crawler(sessionid, update_func):
-    print("Luyencode crawler started!")
-
-    b = Luyencode()
-    b.set_sessionid(sessionid)
-
-    
-    
-    current_page = 1
-    while True:
-        page_count = b.page_count()
-        for i in range(current_page, page_count+1): 
-            page(i)
-            current_page = i
-        current_page = page_count
-        time.sleep(60)

@@ -9,5 +9,6 @@ wheels/
 .venv
 instance
 
+**/*.secret.json
 .env
 cktoj-users-abcxyzhehe-firebase-adminsdk.json

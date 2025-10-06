@@ -30,7 +30,7 @@ def pst(s: requests.Session, url: str, data: dict = {}, *args, **kwargs) -> requ
         }
     )
     data.update({"csrfmiddlewaretoken": s.cookies.get('csrftoken') or s.cookies.get('csrf')})
-    print(data)
+    # print(data)
     r = s.post(
         url, data=data,
         headers = {
