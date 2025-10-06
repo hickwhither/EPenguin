@@ -26,7 +26,7 @@ class Updater(Luyencode):
         print(f"logged in {accounts[0][0]}")
         self.current_page = 1
         print('LuyencodeBot started')
-        scheduler.task('interval', id='luyencode', seconds=60)(self.task)
+        scheduler.task('interval', id='luyencode', seconds=120)(self.task)
     
     def task(self):
         with self.app.app_context():

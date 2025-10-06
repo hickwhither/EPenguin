@@ -41,7 +41,7 @@
 **Ví dụ CURL:**
 
 ```bash
-curl "https://yourdomain.com/api/problems?page=2&count=10&rating_start=1200&rating_end=1800&title=graph"
+curl "http://hi.hw.io.vn:5000/api/problems?page=2&count=10&rating_start=1200&rating_end=1800&title=graph"
 ```
 
 ---

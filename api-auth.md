@@ -47,18 +47,18 @@ fetch("https://api.backend.com/signin", {
 ## Ví dụ curl
 
 ```bash
-curl -X POST https://yourdomain.com/signin \
+curl -X POST http://hi.hw.io.vn:5000/signin \
   -H "Content-Type: application/json" \
   -d '{"username":"alice","password":"secret"}'
 ```
 
 ```bash
-curl -X GET https://yourdomain.com/profile \
+curl -X GET http://hi.hw.io.vn:5000/profile \
   -b "session-cookie=..."
 ```
 
 
 ```bash
-curl -X POST https://yourdomain.com/logout \
+curl -X POST http://hi.hw.io.vn:5000/logout \
   -b "session-cookie=..."
 ```
